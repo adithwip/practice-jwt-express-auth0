@@ -1,10 +1,11 @@
 const express = require('express')
 const bodyParser = require('body-parser')
-const jwt = require('jsonwebtoken')
+const expressjwt = require('express-jwt')
 const cors = require('cors')
+const jwt = require('jsonwebtoken')
 
 const app = express()
-const PORT = process.env.PORT || 8888
+const PORT = process.env.API_PORT || 8888
 const users = [
   { id: 1, username: 'admin', password: 'admin' },
   { id: 2, username: 'guest', password: 'guest' }
@@ -17,7 +18,7 @@ app.post('/login', (req, res) => {
   if (!req.body.username || !req.body.password) {
     res
       .status(400)
-      .send('You nee a username and password!')
+      .send("You need to give username and password")
 
     return
   }
@@ -29,7 +30,7 @@ app.post('/login', (req, res) => {
   if (!user) {
     res
       .status(401)
-      .send('User not found')
+      .send("User not found")
 
     return
   }
@@ -37,13 +38,27 @@ app.post('/login', (req, res) => {
   const token = jwt.sign({
     sub: user.id,
     username: user.username
-  }, "mysupersecretkey", { expiresIn: "3 hours" })
+  }, "mysupersecretkey", { expiresIn: '3 hours' })
 
   res
     .status(200)
-    .send({
-      access_token: token
-    })
+    .send({ access_token: token })
+})
+
+const jwtCheck = expressjwt({
+  secret: 'mysupersecretkey'
+})
+
+app.get('/resource', (req, res) => {
+  res
+    .status(200)
+    .send("Public resource, you can see this")
+})
+
+app.get('/resource/secret', jwtCheck, (req, res) => {
+  res
+    .status(200)
+    .send('Secret resource, you should be logged in to see this')
 })
 
 app.get('*', (req, res) => {
