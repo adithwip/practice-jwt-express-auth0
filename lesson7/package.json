@@ -13,6 +13,6 @@
     "cors": "^2.8.4",
     "express": "^4.16.3",
     "express-jwt": "^5.3.1",
-    "httpster": "^1.0.4"
+    "httpster": "^1.1.0"
   }
 }
